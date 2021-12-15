@@ -5,12 +5,14 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Specialized;
 using System.Web;
 using System.Net.Http.Headers;
+using System.Reflection;
 
 namespace personality_database.NET
 {
     public class PBClient
     {
-        private static readonly Uri baseAddress = new("https://api.personality-database.com/api/v1/");
+        public static readonly Uri baseAddress = new("https://api.personality-database.com/api/v1/");
+        public static readonly Uri nonAPIAddress = new("https://www.personality-database.com/");
         private static readonly HttpClient httpClient = new()
         {
             BaseAddress = baseAddress,
@@ -30,7 +32,8 @@ namespace personality_database.NET
             string responseContent = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                return JsonConvert.DeserializeObject<T>(responseContent) ?? throw new Exception("JSON deserializer errored in PB client");
+                T result = JsonConvert.DeserializeObject<T>(responseContent) ?? throw new Exception("JSON deserializer errored in PB client");
+                return result;
             }
             else
                 throw new Exception(response.StatusCode.ToString());
@@ -42,7 +45,8 @@ namespace personality_database.NET
                 { "query", query },
                 { "offset", offset.ToString() }
             });
-            return (result["profiles"] ?? throw new Exception()).ToObject<SearchProfile[]>() ?? throw new Exception();
+            SearchProfile[] results = (result["profiles"] ?? throw new Exception()).ToObject<SearchProfile[]>() ?? throw new Exception();
+            return results;
         }
         public static async Task<Profile> GetProfileAsync(ulong id)
         {

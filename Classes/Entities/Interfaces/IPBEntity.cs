@@ -9,6 +9,6 @@ namespace personality_database.NET.Classes.Entities.Interfaces
     public interface IPBEntity
     {
         ulong id { get; }
-        string uri { get; }
+        Uri? uri { get; }
     }
 }

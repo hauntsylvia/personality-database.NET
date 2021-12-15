@@ -18,7 +18,6 @@ namespace personality_database.NET.Classes.Entities.Models
         internal SearchProfile(ulong id, string profileImageUrl, string subcategory, string profileName, string unparsedFullPersonality)
         {
             this._id = id;
-            this._uri = uri;
             this._profileImageUrl = profileImageUrl;
             this._subcategory = subcategory;
             this._profileName = profileName;
@@ -28,15 +27,18 @@ namespace personality_database.NET.Classes.Entities.Models
             Enneagram enn = int.TryParse(e1u, out int e1) && int.TryParse(e2u, out int e2) ? new(e1, e2, false) : new(-1, -1, true);
             MyersBriggsResult mbti = new(unparsedFullPersonality.Split(' ')[0], true);
             this._fullPersonality = new FullPersonality(mbti, enn);
+
+            this._uri = new(PBClient.nonAPIAddress + $"profile/{this.id}");
         }
         public SearchProfile(ulong id, string profileImageUrl, string subcategory, string profileName, FullPersonality personality)
         {
             this._id = id;
-            this._uri = uri;
             this._profileImageUrl = profileImageUrl;
             this._subcategory = subcategory;
             this._profileName = profileName;
             this._fullPersonality = personality;
+
+            this._uri = new(PBClient.nonAPIAddress + $"profile/{this.id}");
         }
 
         #region ur handling of to-use properties || ur handling, serializers responsibility to conform
@@ -51,8 +53,8 @@ namespace personality_database.NET.Classes.Entities.Models
         public string unparsedFullPersonality => _unparsedFullPersonality ?? string.Empty;
 
 
-        private readonly string _uri;
-        public string uri => _uri;
+        private readonly Uri _uri;
+        public Uri uri => _uri; 
         #endregion
 
         #region serializers responsibility at default || to-use properties
